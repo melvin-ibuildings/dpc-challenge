@@ -270,22 +270,21 @@ var Player = exports.Player = function () {
             if (this.bulletTime > 0) {
                 this.bulletTime--;
             }
-            if (keys[32] && this.bulletTime === 0) {
+            if ((keys[32] || state.shoot) && this.bulletTime === 0) {
                 this.bulletTime = this.bulletTimeout;
                 this.shoot();
             }
 
-            if (keys[37] && state.keys[39]) {} else if (keys[37]) {
+            if (keys[37] && state.keys[39]) {} else if (keys[37] || state.left) {
                 this.velocity.x = Math.max(this.velocity.x - this.acceleration.x, this.limit.x * -1);
-            } else if (keys[39]) {
-                this.velocity.x = Math.max(this.velocity.x + this.acceleration.x, this.limit.x * 1);
+            } else if (keys[39] || state.right) {
+                this.velocity.x = Math.min(this.velocity.x + this.acceleration.x, this.limit.x * 1);
             }
 
-            if (keys[38] && state.keys[40]) {} else if (keys[38]) {
-
+            if (keys[38] && state.keys[40]) {} else if (keys[38] || state.up) {
                 this.velocity.y = Math.max(this.velocity.y - this.acceleration.y, this.limit.y * -1);
-            } else if (keys[40]) {
-                this.velocity.y = Math.max(this.velocity.y + this.acceleration.y, this.limit.y * 1);
+            } else if (keys[40] || state.down) {
+                this.velocity.y = Math.min(this.velocity.y + this.acceleration.y, this.limit.y * 1);
             }
 
             if (this.velocity.x < 0 && collidesLeft || this.velocity.x > 0 && collidesRight) {
@@ -409,6 +408,8 @@ var AudioPlayer = exports.AudioPlayer = function () {
 },{}],2:[function(require,module,exports) {
 "use strict";
 
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
 var _Box = require("./Box");
 
 var _Player = require("./Player");
@@ -451,7 +452,11 @@ var init = function init() {
 };
 
 var state = {
-    keys: {}
+    keys: {},
+    left: false,
+    right: false,
+    up: false,
+    down: false
 };
 
 var listen = function listen() {
@@ -471,8 +476,6 @@ var _init = init(),
 
 var shot = new _AudioPlayer.AudioPlayer('laser.mp3');
 var crash = new _AudioPlayer.AudioPlayer('crash.mp3');
-var welcome = new _AudioPlayer.AudioPlayer('welcome.mp3');
-welcome.play();
 var player = new _Player.Player(playerElement, window.innerWidth / 2, window.innerHeight / 2, 64, 64, shot);
 var box = new _Box.Box(boxElement1, 300, window.innerHeight / 2 - 128, 64, 64);
 var box2 = new _Box.Box(boxElement2, window.innerWidth - 300, window.innerHeight / 2 + 128, 64, 64);
@@ -481,18 +484,60 @@ var collider = new _Collider.Collider();
 state.player = player;
 state.objects = [box, box2];
 
+var buttonPressed = function buttonPressed(b) {
+    if ((typeof b === "undefined" ? "undefined" : _typeof(b)) === "object") {
+        return b.pressed;
+    }
+    return b === 1.0;
+};
+
+var gamepads = navigator.getGamepads ? navigator.getGamepads() : navigator.webkitGetGamepads ? navigator.webkitGetGamepads : [];
 var animate = function animate() {
+    if (gamepads && gamepads[0] !== null) {
+        var gp = gamepads[0];
+
+        if (buttonPressed(gp.buttons[0])) {
+            state.shoot = true;
+        } else {
+            state.shoot = false;
+        }
+
+        element.textContent = 'x:  ' + gp.axes[0];
+        element2.textContent = 'y:  ' + gp.axes[1];
+
+        if (gp.axes[0] === 1) {
+            state.right = true;
+            state.left = false;
+        } else if (gp.axes[0] === -1) {
+            state.left = true;
+            state.right = false;
+        } else {
+            state.right = false;
+            state.left = false;
+        }
+
+        if (gp.axes[1] === 1) {
+            state.down = true;
+            state.up = false;
+        } else if (gp.axes[1] === -1) {
+            state.up = true;
+            state.down = false;
+        } else {
+            state.up = false;
+            state.down = false;
+        }
+    }
+
     requestAnimationFrame(animate);
     collider.collide(state, crash);
     player.animate(state);
     box.animate(state);
     box2.animate(state);
-    // enemy.animate();
 };
 
 animate();
 listen();
-},{"./Box":3,"./Player":4,"./Collider":5,"./AudioPlayer":6}],8:[function(require,module,exports) {
+},{"./Box":3,"./Player":4,"./Collider":5,"./AudioPlayer":6}],12:[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 
@@ -521,7 +566,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = '' || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + '36265' + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + '40505' + '/');
   ws.onmessage = function (event) {
     var data = JSON.parse(event.data);
 
@@ -662,5 +707,5 @@ function hmrAccept(bundle, id) {
     return hmrAccept(global.parcelRequire, id);
   });
 }
-},{}]},{},[8,2], null)
+},{}]},{},[12,2], null)
 //# sourceMappingURL=/gjx.6acc32f5.map

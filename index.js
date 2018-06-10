@@ -38,8 +38,11 @@ const init = () => {
 
 const state = {
     keys: {},
+    left: false,
+    right: false,
+    up: false,
+    down: false,
 };
-
 
 const listen = () => {
     window.addEventListener("keyup", e => {
@@ -55,8 +58,6 @@ const {playerElement, boxElement1, boxElement2} = init();
 
 const shot = new AudioPlayer('laser.mp3');
 const crash = new AudioPlayer('crash.mp3');
-const welcome = new AudioPlayer('welcome.mp3');
-welcome.play();
 const player = new Player(playerElement, window.innerWidth / 2, window.innerHeight / 2, 64, 64, shot);
 const box = new Box(boxElement1, 300, (window.innerHeight / 2) - 128, 64, 64);
 const box2 = new Box(boxElement2, (window.innerWidth - 300), (window.innerHeight / 2) + 128, 64, 64);
@@ -68,14 +69,59 @@ state.objects = [
     box2,
 ];
 
+const buttonPressed = (b) => {
+    if (typeof(b) === "object") {
+        return b.pressed;
+    }
+    return b === 1.0;
+};
+
+
+const gamepads = navigator.getGamepads ? navigator.getGamepads() : (navigator.webkitGetGamepads ? navigator.webkitGetGamepads : []);
 const animate = () => {
+    if (gamepads && gamepads[0] !== null) {
+        let gp = gamepads[0];
+
+        if (buttonPressed(gp.buttons[0])) {
+            state.shoot = true;
+        } else {
+            state.shoot = false;
+        }
+
+        element.textContent = 'x:  ' + gp.axes[0];
+        element2.textContent = 'y:  ' + gp.axes[1];
+
+        if (gp.axes[0] === 1) {
+            state.right = true;
+            state.left = false;
+        } else if (gp.axes[0] === -1) {
+            state.left = true;
+            state.right = false;
+        } else {
+            state.right = false;
+            state.left = false;
+        }
+
+        if (gp.axes[1] === 1) {
+            state.down = true;
+            state.up = false;
+        } else if (gp.axes[1] === -1) {
+            state.up = true;
+            state.down = false;
+        } else {
+            state.up = false;
+            state.down = false;
+        }
+    }
+
     requestAnimationFrame(animate);
     collider.collide(state, crash);
     player.animate(state);
     box.animate(state);
     box2.animate(state);
-    // enemy.animate();
 };
 
 animate();
 listen();
+
+

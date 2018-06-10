@@ -1,6 +1,7 @@
 import {Bullet} from "./Bullet";
 
 export class Player {
+
     constructor(element, x, y, w, h, shot) {
         this.h = h;
         this.w = w;
@@ -77,7 +78,7 @@ export class Player {
         if (this.bulletTime > 0) {
             this.bulletTime--;
         }
-        if (keys[32] && this.bulletTime === 0) {
+        if ((keys[32] || state.shoot) && this.bulletTime === 0) {
             this.bulletTime = this.bulletTimeout;
             this.shoot();
         }
@@ -85,29 +86,32 @@ export class Player {
         if (keys[37] && state.keys[39]) {
 
         }
-        else if (keys[37]) {
+        else if (keys[37] || state.left) {
             this.velocity.x = Math.max(
-                this.velocity.x - this.acceleration.x, this.limit.x * -1
+                this.velocity.x - this.acceleration.x,
+                this.limit.x * -1,
             );
         }
-        else if (keys[39]) {
-            this.velocity.x = Math.max(
-                this.velocity.x + this.acceleration.x, this.limit.x * 1
+        else if (keys[39] || state.right) {
+            this.velocity.x = Math.min(
+                this.velocity.x + this.acceleration.x,
+                this.limit.x * 1,
             );
         }
 
         if (keys[38] && state.keys[40]) {
 
         }
-        else if (keys[38]) {
-
+        else if (keys[38] || state.up) {
             this.velocity.y = Math.max(
-                this.velocity.y - this.acceleration.y, this.limit.y * -1
+                this.velocity.y - this.acceleration.y,
+                this.limit.y * -1,
             );
         }
-        else if (keys[40]) {
-            this.velocity.y = Math.max(
-                this.velocity.y + this.acceleration.y, this.limit.y * 1
+        else if (keys[40] || state.down) {
+            this.velocity.y = Math.min(
+                this.velocity.y + this.acceleration.y,
+                this.limit.y * 1,
             );
         }
 
@@ -121,7 +125,6 @@ export class Player {
             this.velocity.x *= this.friction.x;
             this.x += this.velocity.x;
         }
-
 
         if (this.velocity.y < 0 && collidesUp || this.velocity.y > 0 && collidesDown) {
             if (collidesUpWith && this.x <= collidesUpWith.x || collidesDownWith && this.x < collidesDownWith.x) {
