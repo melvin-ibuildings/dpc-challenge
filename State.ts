@@ -1,18 +1,20 @@
-export class GameState {
-    public keys: Array = [];
-    public left: boolean = false;
-    public right: boolean = false;
-    public up: boolean = false;
-    public down: boolean = false;
-    public shoot: boolean = false;
-    public player: any = null;
-    public collidesLeft: boolean = false;
-    public collidesLeftWith: boolean = false;
-    public collidesRight: boolean = false;
-    public collidesRightWith: boolean = false;
-    public collidesUp: boolean = false;
-    public collidesUpWith: boolean = false;
-    public collidesDown: boolean = false;
-    public collidesDownWith: boolean = false;
-    public objects: Array = [];
+import Player from "./Player";
+
+export interface GameState {
+    keys: Array;
+    left: boolean;
+    right: boolean;
+    up: boolean;
+    down: boolean;
+    shoot: boolean;
+    player: Player;
+    collidesLeft: boolean;
+    collidesLeftWith: boolean;
+    collidesRight: boolean;
+    collidesRightWith: boolean;
+    collidesUp: boolean;
+    collidesUpWith: boolean;
+    collidesDown: boolean;
+    collidesDownWith: boolean;
+    objects: Array;
 }

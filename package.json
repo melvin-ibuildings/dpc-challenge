@@ -1,13 +1,18 @@
 {
   "devDependencies": {
+    "@types/react": "^16.3.17",
+    "@types/react-dom": "^16.0.6",
     "babel-core": "^6.26.3",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "typescript": "^2.9.1"
   },
   "dependencies": {
+    "@types/pixi.js": "^4.7.5",
+    "pixi.js": "^4.8.1",
     "prop-types": "^15.6.1",
     "react": "^16.4.0",
-    "react-dom": "^16.4.0"
+    "react-dom": "^16.4.0",
+    "react-pixi-fiber": "^0.4.7"
   },
   "name": "gjx",
   "version": "1.0.0",
